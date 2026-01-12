@@ -22,6 +22,7 @@ Do not hardcode data. Use Alpine.js to fetch data from the provided JSON path.
 
 **Template**:
 ```html
+<!-- DOM Container: MUST use inline styles for dimensions. DO NOT use Tailwind or external classes. -->
 <div x-data="{ 
     init() {
         this.fetchData();
@@ -36,8 +37,8 @@ Do not hardcode data. Use Alpine.js to fetch data from the provided JSON path.
     renderChart(data) {
         // ... ECharts logic here ...
     }
-}" class="chart-container" style="width: 100%; height: 400px;">
-    <div id="chart-id" style="width: 100%; height: 100%;"></div>
+}" class="experiment-container" style="width: 100%; height: 600px;">
+    <div x-ref="chart" style="width: 100%; height: 100%;"></div>
 </div>
 ```
 

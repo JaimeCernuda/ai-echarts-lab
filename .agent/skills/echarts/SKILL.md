@@ -9,6 +9,11 @@ description: >
   (5) Interactive dashboards or real-time data displays,
   (6) 3D visualizations or geographic/map charts.
   Outputs valid ECharts option objects for React (.jsx), HTML, or Node.js contexts.
+
+  **CRITICAL CONSTRAINTS**:
+  - Do NOT generate markdown analysis or prose below the chart.
+  - Do NOT generate non-standard CSS classes (e.g. Tailwind) unless explicitly requested.
+  - Only output the technical artifacts required to build the visualization.
 ---
 
 # Apache ECharts Skill
