@@ -19,17 +19,16 @@ description: Analyzes an experiment and creates a mode-aware EChart.
       ```
 
 4. **Content Generation**
-    - ALWAYS read the skills on .agent/skills:
+    - ALWAYS read the skills on .agent/skills, this is CRITICAL:
         - Reference the **Lab skill** for: Environment setup, theme usage (`labTheme`), Alpine.js integration, and valid HTML structure.
         - Reference the **ECharts skill** for: Chart type selection, option configuration components (series, axes, legends), and data formatting strategies.
-    - With that knoeldge create the eachart snippet, try to really think about the best figure to represent the figure, while common, is not always lines and charts that is best and more beautifull. 
+    - With that knoeldge create the achart snippet with Alpin for data extraction, try to really think about the best figure to represent the figure, while common, is not always lines and charts that is best and more beautifull. 
+    - Do not hardcode the data onto the chart.
     - Insert the ECharts HTML/JS snippet (using the Skill guidelines) into the body of this new file. Do NOT touch `lab.md`.
 
 5. **Strict Verification Loop (CRITICAL)**:
     - **Deploy**: Start the local server (e.g., `hugo server`) and ensure it is running.
-    - **Capture**: Use a browser tool to open the current_work page by going to (VERY IMPORTANT) directly http://localhost:1313.
-        - **CRITICAL RESTRICTION**: Do NOT navigate to the individual experiment page (e.g. /experiments/slug). Verify the card as it appears on the dashboard.
-        - **ACTION**: Scroll to the experiment card if needed, but do NOT click it. 
+    - **Capture**: Use a browser tool to open the current_work page by going to (VERY IMPORTANT) directly http://localhost:1313 , do NOT go to http://localhost:1313/experiments/xxxxx.
         - Take a screenshot in **Light Mode**.
         - Toggle the system/browser to **Dark Mode** and take a second screenshot.
     - **Evaluate**: Analyze the screenshots for errors and possible improvemetns:

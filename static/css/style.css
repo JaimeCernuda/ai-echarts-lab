@@ -479,3 +479,94 @@ h2,
 h3 {
     color: inherit;
 }
+
+/* Download Actions */
+.summary-meta {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.download-action {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.download-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 6px;
+    color: var(--text-light);
+    opacity: 0.7;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.download-toggle:hover {
+    background: rgba(0, 0, 0, 0.05);
+    opacity: 1;
+    color: var(--primary);
+}
+
+body.dark-mode .download-toggle {
+    color: var(--text-dark);
+}
+
+body.dark-mode .download-toggle:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.download-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 0.5rem;
+    background: var(--surface-light);
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 0.5rem;
+    z-index: 50;
+    min-width: 160px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+body.dark-mode .download-menu {
+    background: var(--surface-dark);
+    border-color: var(--border-dark);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.download-menu button {
+    background: none;
+    border: none;
+    text-align: left;
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+    color: var(--text-light);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.1s;
+    font-family: inherit;
+    white-space: nowrap;
+}
+
+body.dark-mode .download-menu button {
+    color: var(--text-dark);
+}
+
+.download-menu button:hover {
+    background: rgba(0, 0, 0, 0.05);
+    color: var(--primary);
+}
+
+body.dark-mode .download-menu button:hover {
+    background: rgba(255, 255, 255, 0.1);
+}

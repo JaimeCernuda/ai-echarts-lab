@@ -18,7 +18,8 @@ Always initialize charts using the custom Lab theme logic provided in the global
   ```
 
 ## 2. Dynamic Loading with Alpine.js
-Do not hardcode data. Use Alpine.js to fetch data from the provided JSON path.
+Do not hardcode data. Use Alpine.js to fetch data from the data directory.
+If the data is not on JSON format, convert it to JSON, and then retrieve the data from the provided JSON path
 
 **Template**:
 ```html
@@ -28,7 +29,8 @@ Do not hardcode data. Use Alpine.js to fetch data from the provided JSON path.
         this.fetchData();
     },
     fetchData() {
-        fetch('/path/to/data.json')
+        // Data MUST live in static/data/experiments/ and be fetched via root relative path
+        fetch('/data/experiments/example_name.json')
             .then(response => response.json())
             .then(data => {
                 this.renderChart(data);

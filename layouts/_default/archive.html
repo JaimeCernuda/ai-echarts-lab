@@ -17,6 +17,51 @@
     el.open = true;
     el.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
+    },
+    downloadChart(btnEl, type) {
+    // Find the parent details element
+    const details = btnEl.closest('.experiment-item');
+    if (!details) return;
+
+    // Ensure details is open so chart exists in DOM (if lazy loaded)
+    // Check if chart container exists
+    const chartContainer = details.querySelector('.experiment-container [x-ref]');
+    if (!chartContainer) {
+    console.error('Chart container not found');
+    return;
+    }
+
+    const instance = echarts.getInstanceByDom(chartContainer);
+    if (!instance) {
+    alert('Chart instance not ready. Please ensure the experiment is viewable.');
+    return;
+    }
+
+    try {
+    const url = instance.getDataURL({
+    type: type,
+    backgroundColor: 'transparent',
+    pixelRatio: 2 // High res for PNG
+    });
+
+    if (!url) throw new Error('Export failed');
+
+    const link = document.createElement('a');
+    link.download = `chart-export.${type}`;
+    link.href = url;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    } catch (e) {
+    console.error(e);
+    if (type === 'svg') {
+    alert('SVG export is only available if the experiment is configured with the SVG renderer. Downloading as PNG
+    instead.');
+    this.downloadChart(btnEl, 'png');
+    } else {
+    alert('Failed to download chart.');
+    }
+    }
     }
     }">
     <!-- Sidebar -->
@@ -51,6 +96,24 @@
                     <h2>{{ .Title }}</h2>
                 </div>
                 <div class="summary-meta">
+                    <!-- Download Action -->
+                    <div class="download-action" x-data="{ open: false }" @click.stop>
+                        <button class="download-toggle" @click.stop="open = !open" title="Download Chart">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                        </button>
+                        <div class="download-menu" x-show="open" @click.away="open = false"
+                            x-transition.origin.top.right style="display: none;">
+                            <button @click="open = false; downloadChart($el, 'png')">PNG (Transparent)</button>
+                            <button @click="open = false; downloadChart($el, 'svg')">SVG</button>
+                        </div>
+                    </div>
+
                     <time>{{ .Date.Format "January 2, 2006" }}</time>
                 </div>
             </summary>
