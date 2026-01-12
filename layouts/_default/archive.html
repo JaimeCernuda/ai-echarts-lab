@@ -1,24 +1,64 @@
 {{ define "main" }}
-<div class="archive-container">
-    <h1>{{ .Title }}</h1>
+{{ $experiments := where .Site.RegularPages "Section" "experiments" }}
+{{ $sorted := sort $experiments "Date" "desc" }}
+{{ $past := after 1 $sorted }}
+<div class="archive-layout" x-data="{
+    search: '',
+    experiments: [
+        {{ range $past }} {{ if not .Params.draft }} {
+    id: 'exp-{{ .File.ContentBaseName | md5 }}' , title: '{{ .Title }}' , date: '{{ .Date.Format " January 2, 2006" }}'
+    , contentId: 'details-{{ .File.ContentBaseName | md5 }}' }, {{ end }} {{ end }} ], get filteredExperiments() { if
+    (this.search==='' ) return this.experiments; return this.experiments.filter(exp=>
+    exp.title.toLowerCase().includes(this.search.toLowerCase()));
+    },
+    scrollTo(expId) {
+    const el = document.getElementById(expId);
+    if (el) {
+    el.open = true;
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    }
+    }">
+    <!-- Sidebar -->
+    <aside class="archive-sidebar">
+        <div class="search-box">
+            <input type="text" x-model="search" placeholder="Search experiments..." class="search-input">
+        </div>
 
-    {{ $experiments := where .Site.RegularPages "Section" "experiments" }}
-    {{ $sorted := sort $experiments "Date" "desc" }}
-    {{ $past := after 1 $sorted }}
+        <h3>Experiments</h3>
+        <nav class="experiment-list">
+            <template x-for="exp in filteredExperiments" :key="exp.id">
+                <a @click="scrollTo(exp.contentId)" class="archive-link">
+                    <span x-text="exp.title"></span>
+                    <small x-text="exp.date"></small>
+                </a>
+            </template>
+            <div x-show="filteredExperiments.length === 0" style="opacity: 0.5; font-size: 0.9rem; padding: 1rem;">
+                No matching experiments found.
+            </div>
+        </nav>
+    </aside>
 
-    <div class="archive-list">
+    <!-- Content -->
+    <div class="archive-content">
+        <!-- Main title removed per user request -->
+
         {{ range $past }}
-        <details class="experiment-archive-item">
-            <summary>
-                <span class="experiment-date">{{ .Date.Format "Jan 02, 2006" }}</span>
-                <span class="experiment-title">{{ .Title }}</span>
+        {{ if not .Params.draft }}
+        <details id="details-{{ .File.ContentBaseName | md5 }}" class="experiment-item">
+            <summary class="experiment-summary">
+                <div class="summary-title">
+                    <h2>{{ .Title }}</h2>
+                </div>
+                <div class="summary-meta">
+                    <time>{{ .Date.Format "January 2, 2006" }}</time>
+                </div>
             </summary>
             <div class="experiment-body">
                 {{ .Content }}
             </div>
         </details>
-        {{ else }}
-        <p>No past experiments archived yet.</p>
+        {{ end }}
         {{ end }}
     </div>
 </div>

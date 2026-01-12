@@ -6,9 +6,14 @@
 
     {{ if $current }}
     <div class="experiment-fullscreen">
-        <h1>{{ $current.Title }}</h1>
+        <header class="experiment-header-simple">
+            <!-- Title and Date removed per user request -->
+        </header>
         <div class="experiment-content">
             {{ $current.Content }}
+        </div>
+        <div class="actions">
+            <!-- Button removed per user request -->
         </div>
     </div>
     {{ else }}

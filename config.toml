@@ -1,7 +1,12 @@
 baseURL = 'http://example.org/'
 languageCode = 'en-us'
-title = 'Antigravity Research Lab'
+title = 'ECharts Lab'
 theme = []
 
 [params]
   description = "A specialized research lab for ECharts visualizations."
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
