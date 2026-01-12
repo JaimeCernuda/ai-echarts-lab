@@ -1,0 +1,25 @@
+{{ define "main" }}
+<div class="archive-container">
+    <h1>{{ .Title }}</h1>
+
+    {{ $experiments := where .Site.RegularPages "Section" "experiments" }}
+    {{ $sorted := sort $experiments "Date" "desc" }}
+    {{ $past := after 1 $sorted }}
+
+    <div class="archive-list">
+        {{ range $past }}
+        <details class="experiment-archive-item">
+            <summary>
+                <span class="experiment-date">{{ .Date.Format "Jan 02, 2006" }}</span>
+                <span class="experiment-title">{{ .Title }}</span>
+            </summary>
+            <div class="experiment-body">
+                {{ .Content }}
+            </div>
+        </details>
+        {{ else }}
+        <p>No past experiments archived yet.</p>
+        {{ end }}
+    </div>
+</div>
+{{ end }}

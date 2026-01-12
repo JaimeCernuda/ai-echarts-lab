@@ -1,0 +1,38 @@
+{{ define "main" }}
+<div class="lab-container">
+    {{ $experiments := where .Site.RegularPages "Section" "experiments" }}
+    {{ $sorted := sort $experiments "Date" "desc" }}
+    {{ $current := index $sorted 0 }}
+    {{ $past := after 1 $sorted }}
+
+    <section id="current-work">
+        <h2>Current Work</h2>
+        {{ if $current }}
+        <div class="experiment-card active">
+            <h3>{{ $current.Title }} <small>({{ $current.Date.Format "Jan 2, 2006" }})</small></h3>
+            <div class="experiment-content">
+                {{ $current.Content }}
+            </div>
+        </div>
+        {{ else }}
+        <p>No active experiments found.</p>
+        {{ end }}
+    </section>
+
+    <section id="past-experiments">
+        <h2>Past Experiments</h2>
+        <div class="archive-container">
+            {{ range $past }}
+            <details class="experiment-archive-item">
+                <summary>{{ .Title }} ({{ .Date.Format "Jan 2" }})</summary>
+                <div class="experiment-content">
+                    {{ .Content }}
+                </div>
+            </details>
+            {{ else }}
+            <p>No past experiments.</p>
+            {{ end }}
+        </div>
+    </section>
+</div>
+{{ end }}

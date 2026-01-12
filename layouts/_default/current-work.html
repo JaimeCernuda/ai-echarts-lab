@@ -1,0 +1,21 @@
+{{ define "main" }}
+<div class="current-work-container">
+    {{ $experiments := where .Site.RegularPages "Section" "experiments" }}
+    {{ $sorted := sort $experiments "Date" "desc" }}
+    {{ $current := index $sorted 0 }}
+
+    {{ if $current }}
+    <div class="experiment-fullscreen">
+        <h1>{{ $current.Title }}</h1>
+        <div class="experiment-content">
+            {{ $current.Content }}
+        </div>
+    </div>
+    {{ else }}
+    <div class="empty-state">
+        <h1>No Active Experiments</h1>
+        <p>Run <code>/Build-graph</code> to start a new experiment.</p>
+    </div>
+    {{ end }}
+</div>
+{{ end }}

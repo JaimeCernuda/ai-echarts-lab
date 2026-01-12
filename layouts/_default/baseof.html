@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ .Title }} | {{ .Site.Title }}</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- ECharts -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <script src="/js/falcon.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        {{ partial "sidebar.html" . }}
+        <main class="content-area">
+            <h1>{{ .Title }}</h1>
+            {{ .Content }}
+        </main>
+    </div>
+    <script>
+        // Theme Logic
+        function applyTheme() {
+            const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            document.body.classList.toggle('dark-mode', isDark);
+            document.body.classList.toggle('light-mode', !isDark);
+        }
+        applyTheme();
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
+    </script>
+</body>
+</html>

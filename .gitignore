@@ -1,0 +1,11 @@
+# Hugo default
+public/
+resources/
+.hugo_build.lock
+
+# System
+thumbs.db
+.DS_Store
+
+# Note: Private paths (data/, content/experiments/) are ignored via .git/info/exclude
+# to allow Agent access.

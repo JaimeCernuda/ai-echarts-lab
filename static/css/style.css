@@ -1,0 +1,63 @@
+:root {
+    --bg-light: #ffffff;
+    --bg-dark: #111111;
+    --text-light: #111111;
+    --text-dark: #ffffff;
+    --falcon-green: #00ff9d;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    min-height: 100vh;
+}
+
+.app-container {
+    display: flex;
+    width: 100%;
+}
+
+.sidebar {
+    width: 250px;
+    background: #f4f4f4;
+    padding: 20px;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    overflow-y: auto;
+}
+
+.content-area {
+    flex: 1;
+    padding: 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Light Mode */
+body.light-mode {
+    background-color: var(--bg-light);
+    color: var(--text-light);
+}
+
+/* Dark Mode */
+body.dark-mode {
+    background-color: var(--bg-dark);
+    color: var(--text-dark);
+}
+body.dark-mode .sidebar {
+    background: #1a1a1a;
+    border-right: 1px solid #333;
+}
+
+.experiment-container {
+    width: 100%;
+    height: 500px;
+    margin-bottom: 2rem;
+    border: 1px dashed #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
