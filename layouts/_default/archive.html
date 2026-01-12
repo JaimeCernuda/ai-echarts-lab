@@ -18,51 +18,6 @@
     el.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
     },
-    downloadChart(btnEl, type) {
-    // Find the parent details element
-    const details = btnEl.closest('.experiment-item');
-    if (!details) return;
-
-    // Ensure details is open so chart exists in DOM (if lazy loaded)
-    // Check if chart container exists
-    const chartContainer = details.querySelector('.experiment-container [x-ref]');
-    if (!chartContainer) {
-    console.error('Chart container not found');
-    return;
-    }
-
-    const instance = echarts.getInstanceByDom(chartContainer);
-    if (!instance) {
-    alert('Chart instance not ready. Please ensure the experiment is viewable.');
-    return;
-    }
-
-    try {
-    const url = instance.getDataURL({
-    type: type,
-    backgroundColor: 'transparent',
-    pixelRatio: 2 // High res for PNG
-    });
-
-    if (!url) throw new Error('Export failed');
-
-    const link = document.createElement('a');
-    link.download = `chart-export.${type}`;
-    link.href = url;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    } catch (e) {
-    console.error(e);
-    if (type === 'svg') {
-    alert('SVG export is only available if the experiment is configured with the SVG renderer. Downloading as PNG
-    instead.');
-    this.downloadChart(btnEl, 'png');
-    } else {
-    alert('Failed to download chart.');
-    }
-    }
-    }
     }">
     <!-- Sidebar -->
     <aside class="archive-sidebar">
@@ -109,8 +64,9 @@
                         </button>
                         <div class="download-menu" x-show="open" @click.away="open = false"
                             x-transition.origin.top.right style="display: none;">
-                            <button @click="open = false; downloadChart($el, 'png')">PNG (Transparent)</button>
-                            <button @click="open = false; downloadChart($el, 'svg')">SVG</button>
+                            <button @click="open = false; downloadExperimentChart($el, 'png')">PNG
+                                (Transparent)</button>
+                            <button @click="open = false; downloadExperimentChart($el, 'svg')">SVG</button>
                         </div>
                     </div>
 
@@ -125,4 +81,50 @@
         {{ end }}
     </div>
 </div>
+
+<script>
+    window.downloadExperimentChart = function (btnEl, type) {
+        // Find the parent details element
+        const details = btnEl.closest('.experiment-item');
+        if (!details) return;
+
+        // Check if chart container exists
+        const chartContainer = details.querySelector('.experiment-container [x-ref]');
+        if (!chartContainer) {
+            console.error('Chart container not found');
+            return;
+        }
+
+        const instance = echarts.getInstanceByDom(chartContainer);
+        if (!instance) {
+            alert('Chart instance not ready. Please ensure the experiment is viewable.');
+            return;
+        }
+
+        try {
+            const url = instance.getDataURL({
+                type: type,
+                backgroundColor: 'transparent',
+                pixelRatio: 2 // High res for PNG
+            });
+
+            if (!url) throw new Error('Export failed');
+
+            const link = document.createElement('a');
+            link.download = `chart-export.${type}`;
+            link.href = url;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } catch (e) {
+            console.error(e);
+            if (type === 'svg') {
+                alert('SVG export is only available if the experiment is configured with the SVG renderer. Downloading as PNG instead.');
+                window.downloadExperimentChart(btnEl, 'png');
+            } else {
+                alert('Failed to download chart.');
+            }
+        }
+    };
+</script>
 {{ end }}
