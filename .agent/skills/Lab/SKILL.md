@@ -2,6 +2,31 @@
 
 You are an expert in data visualization using Apache ECharts. When asked to build a graph, you must adhere to the following strict guidelines to ensure consistency and high operational standards in the Research Lab.
 
+> [!CAUTION]
+> **CRITICAL: Hugo Markdown Parsing Issue**
+> 
+> Hugo's markdown processor interprets lines with 4+ spaces of indentation as code blocks. This means **JavaScript inside `x-data` attributes MUST NOT be indented** with 4 or more spaces, or it will be escaped and wrapped in `<pre><code>` tags, breaking the chart.
+> 
+> **BAD** (will break):
+> ```html
+> <div x-data="{
+>     init() {           <!-- 4 spaces = code block! -->
+>         this.fetch();  <!-- 8 spaces = code block! -->
+>     }
+> }">
+> ```
+> 
+> **GOOD** (works correctly):
+> ```html
+> <div x-data="{
+> init() {
+> this.fetch();
+> }
+> }">
+> ```
+> 
+> Keep all JavaScript inside x-data at zero indentation or use single-line format.
+
 ## 1. Theme Awareness
 Always initialize charts using the custom Lab theme logic provided in the global scope.
 - **Pattern**: `echarts.init(dom, theme)`
@@ -45,10 +70,12 @@ If the data is not on JSON format, convert it to JSON, and then retrieve the dat
 ```
 
 ## 3. Minimalist Aesthetic
-- **Grid Lines**: Remove them. `grid: { show: false }`.
-- **Toolbox**: Remove them. `toolbox: { show: false }`.
 - **Colors**: Use the `labGreen` (#00ff9d) for primary data points.
 - **Contrast**: Ensure high visibility against #111111 (Dark) and #ffffff (Light).
+- **Paper ready images**:
+    - **Title**: Never have a title. 
+    - **Legend**: Try to have legend inside of the graph figure so it doesnt add extra height.
+    - **Accesibility**: If having multiple charts of the same type (lines, bars, etc.) make them distinguisable not just by color, texture on bars, different shapes on the lines, so that black and white printing can still be readable.
 
 ## 4. Auto-Sizing
 Always include a resize listener to make the chart responsive.
