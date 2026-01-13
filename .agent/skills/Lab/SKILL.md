@@ -29,7 +29,7 @@ If the data is not on JSON format, convert it to JSON, and then retrieve the dat
         this.fetchData();
     },
     fetchData() {
-        // Data MUST live in static/data/experiments/ and be fetched via root relative path
+        // Experiments live in data/viz/, JSON in static/data/experiments/
         fetch('/data/experiments/example_name.json')
             .then(response => response.json())
             .then(data => {

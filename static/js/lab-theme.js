@@ -26,5 +26,11 @@ const labThemeDark = {
     }
 };
 
+
 window.labThemeLight = labThemeLight;
 window.labThemeDark = labThemeDark;
+
+// Register default theme to prevent init errors
+if (typeof echarts !== 'undefined') {
+    echarts.registerTheme('labTheme', labThemeLight);
+}

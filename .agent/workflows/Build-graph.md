@@ -9,8 +9,9 @@ description: Analyzes an experiment and creates a mode-aware EChart.
     - If no descriptor, plan the most insightful visualization (Radar for multi-metric, Heatmap for density, etc.).
 
 3. **Build Process**:
-    - **Identify**: Create a unique slug for the experiment (e.g., based on the folder name or date).
-    - **Start**: Write a NEW file to `content/experiments/<slug>.md`.
+    - **Identify**: Create a unique slug for the experiment.
+    - **Start**: Write a NEW file to `data/viz/<slug>.md`.
+    - **Data**: Convert CSV to JSON in `static/data/experiments/<slug>.json`.
     - **Frontmatter**: Ensure the file has:
       ```yaml
       title: "Title based on analysis"

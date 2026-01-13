@@ -6,8 +6,8 @@
     search: '',
     experiments: [
         {{ range $past }} {{ if not .Params.draft }} {
-    id: 'exp-{{ .File.ContentBaseName | md5 }}' , title: '{{ .Title }}' , date: '{{ .Date.Format " January 2, 2006" }}'
-    , contentId: 'details-{{ .File.ContentBaseName | md5 }}' }, {{ end }} {{ end }} ], get filteredExperiments() { if
+    id: 'exp-{{ .Title | urlize }}' , title: '{{ .Title }}' , date: '{{ .Date.Format " January 2, 2006" }}' ,
+    contentId: 'details-{{ .Title | urlize }}' }, {{ end }} {{ end }} ], get filteredExperiments() { if
     (this.search==='' ) return this.experiments; return this.experiments.filter(exp=>
     exp.title.toLowerCase().includes(this.search.toLowerCase()));
     },
@@ -45,16 +45,16 @@
 
         {{ range $past }}
         {{ if not .Params.draft }}
-        <details id="details-{{ .File.ContentBaseName | md5 }}" class="experiment-item">
+        <details id="details-{{ .Title | urlize }}" class="experiment-item">
             <summary class="experiment-summary">
                 <div class="summary-title">
                     <h2>{{ .Title }}</h2>
                 </div>
                 <div class="summary-meta">
-                    <!-- Download Action -->
-                    <div class="download-action" x-data="{ open: false }" @click.stop>
-                        <button class="download-toggle" @click.stop="open = !open" title="Download Chart">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                    <div class="download-action">
+                        <button class="download-toggle" onclick="downloadExperimentChart(this, 'png')"
+                            title="Download PNG">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                 stroke-linejoin="round">
                                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -62,14 +62,7 @@
                                 <line x1="12" y1="15" x2="12" y2="3"></line>
                             </svg>
                         </button>
-                        <div class="download-menu" x-show="open" @click.away="open = false"
-                            x-transition.origin.top.right style="display: none;">
-                            <button @click="open = false; downloadExperimentChart($el, 'png')">PNG
-                                (Transparent)</button>
-                            <button @click="open = false; downloadExperimentChart($el, 'svg')">SVG</button>
-                        </div>
                     </div>
-
                     <time>{{ .Date.Format "January 2, 2006" }}</time>
                 </div>
             </summary>
@@ -83,48 +76,50 @@
 </div>
 
 <script>
-    window.downloadExperimentChart = function (btnEl, type) {
-        // Find the parent details element
-        const details = btnEl.closest('.experiment-item');
-        if (!details) return;
-
-        // Check if chart container exists
-        const chartContainer = details.querySelector('.experiment-container [x-ref]');
-        if (!chartContainer) {
-            console.error('Chart container not found');
+    function downloadExperimentChart(btn, format) {
+        var details = btn.closest('.experiment-item');
+        if (!details) {
+            alert('Could not find experiment container');
             return;
         }
 
-        const instance = echarts.getInstanceByDom(chartContainer);
-        if (!instance) {
-            alert('Chart instance not ready. Please ensure the experiment is viewable.');
+        var chartEl = details.querySelector('[x-ref="chart"]');
+        if (!chartEl) {
+            alert('Could not find chart element');
             return;
         }
 
-        try {
-            const url = instance.getDataURL({
-                type: type,
-                backgroundColor: 'transparent',
-                pixelRatio: 2 // High res for PNG
-            });
-
-            if (!url) throw new Error('Export failed');
-
-            const link = document.createElement('a');
-            link.download = `chart-export.${type}`;
-            link.href = url;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        } catch (e) {
-            console.error(e);
-            if (type === 'svg') {
-                alert('SVG export is only available if the experiment is configured with the SVG renderer. Downloading as PNG instead.');
-                window.downloadExperimentChart(btnEl, 'png');
-            } else {
-                alert('Failed to download chart.');
-            }
+        var chart = echarts.getInstanceByDom(chartEl);
+        if (!chart) {
+            alert('Chart not initialized. Please expand the experiment first.');
+            return;
         }
-    };
+
+        var title = details.querySelector('h2');
+        var name = title ? title.textContent.replace(/[^a-zA-Z0-9]/g, '_') : 'chart';
+
+        // ECharts canvas renderer only supports PNG export
+        // Always use 'png' for getDataURL regardless of requested format
+        var dataURL = chart.getDataURL({
+            type: 'png',
+            backgroundColor: 'transparent',
+            pixelRatio: 2
+        });
+
+        // Create download link with proper filename
+        var a = document.createElement('a');
+        a.href = dataURL;
+        a.download = name + '.png';
+
+        // Force download by triggering in the same execution context
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        a.click();
+
+        // Cleanup after a short delay to ensure download starts
+        setTimeout(function () {
+            document.body.removeChild(a);
+        }, 100);
+    }
 </script>
 {{ end }}

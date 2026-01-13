@@ -10,3 +10,17 @@ theme = []
   [markup.goldmark]
     [markup.goldmark.renderer]
       unsafe = true
+
+[module]
+  [[module.mounts]]
+    source = "content"
+    target = "content"
+  [[module.mounts]]
+    source = "data/viz"
+    target = "content/experiments"
+  [[module.mounts]]
+    source = "static"
+    target = "static"
+  [[module.mounts]]
+    source = "layouts"
+    target = "layouts"
