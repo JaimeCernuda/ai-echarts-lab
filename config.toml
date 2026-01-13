@@ -19,6 +19,10 @@ theme = []
     source = "data/viz"
     target = "content/experiments"
   [[module.mounts]]
+    source = "data/viz"
+    target = "static/js/charts"
+    includeFiles = "*.js"
+  [[module.mounts]]
     source = "static"
     target = "static"
   [[module.mounts]]

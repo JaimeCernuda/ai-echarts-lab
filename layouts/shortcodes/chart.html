@@ -1,0 +1,11 @@
+{{- $chartName := .Page.Params.chart -}}
+{{- $dataPath := printf "/data/experiments/%s.json" $chartName -}}
+{{- $jsPath := printf "/js/charts/%s.js" $chartName -}}
+
+<script src="/js/chart-component.js"></script>
+<script src="{{ $jsPath }}"></script>
+
+<div x-data="chartComponent('{{ $dataPath }}', '{{ $chartName }}')" class="experiment-container"
+    style="width: 100%; height: 600px;">
+    <div x-ref="chart" style="width: 100%; height: 100%;"></div>
+</div>

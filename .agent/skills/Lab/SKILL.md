@@ -2,88 +2,85 @@
 
 You are an expert in data visualization using Apache ECharts. When asked to build a graph, you must adhere to the following strict guidelines to ensure consistency and high operational standards in the Research Lab.
 
-> [!CAUTION]
-> **CRITICAL: Hugo Markdown Parsing Issue**
-> 
-> Hugo's markdown processor interprets lines with 4+ spaces of indentation as code blocks. This means **JavaScript inside `x-data` attributes MUST NOT be indented** with 4 or more spaces, or it will be escaped and wrapped in `<pre><code>` tags, breaking the chart.
-> 
-> **BAD** (will break):
-> ```html
-> <div x-data="{
->     init() {           <!-- 4 spaces = code block! -->
->         this.fetch();  <!-- 8 spaces = code block! -->
->     }
-> }">
-> ```
-> 
-> **GOOD** (works correctly):
-> ```html
-> <div x-data="{
-> init() {
-> this.fetch();
-> }
-> }">
-> ```
-> 
-> Keep all JavaScript inside x-data at zero indentation or use single-line format.
+## 1. Chart Architecture (Shortcode Pattern)
 
-## 1. Theme Awareness
-Always initialize charts using the custom Lab theme logic provided in the global scope.
-- **Pattern**: `echarts.init(dom, theme)`
-- **Themes**: `labThemeLight` and `labThemeDark` are available as global window objects.
-- **Implementation**:
-  ```javascript
-  // Default to what matches the system if not explicitly toggled, 
-  // but the 'static/js/lab-theme.js' script handles the 'labThemeLight'/'labThemeDark' objects.
-  // The charts should be reactive or re-initialized if the theme changes.
-  
-  // So when writing the HTML for the chart:
-  var chartDom = document.getElementById('main');
-  var myChart = echarts.init(chartDom, isDarkMode ? window.labThemeDark : window.labThemeLight);
-  ```
+Use the `{{< chart >}}` shortcode for all visualizations. This separates concerns:
 
-## 2. Dynamic Loading with Alpine.js
-Do not hardcode data. Use Alpine.js to fetch data from the data directory.
-If the data is not on JSON format, convert it to JSON, and then retrieve the data from the provided JSON path
+**Markdown file** (`data/viz/<slug>.md`):
+```yaml
+---
+title: "Chart Title"
+date: 2026-01-12T19:09:59-06:00
+chart: <slug>
+draft: false
+---
 
-**Template**:
-```html
-<!-- DOM Container: MUST use inline styles for dimensions. DO NOT use Tailwind or external classes. -->
-<div x-data="{ 
-    init() {
-        this.fetchData();
-    },
-    fetchData() {
-        // Experiments live in data/viz/, JSON in static/data/experiments/
-        fetch('/data/experiments/example_name.json')
-            .then(response => response.json())
-            .then(data => {
-                this.renderChart(data);
-            });
-    },
-    renderChart(data) {
-        // ... ECharts logic here ...
-    }
-}" class="experiment-container" style="width: 100%; height: 600px;">
-    <div x-ref="chart" style="width: 100%; height: 100%;"></div>
-</div>
+{{< chart >}}
 ```
+
+**JavaScript file** (`data/viz/<slug>.js`):
+```javascript
+/**
+ * Chart Configuration
+ * Data: /data/experiments/<slug>.json
+ */
+function renderChart_<slug_underscored>(data, echarts) {
+    return {
+        // ECharts option object
+        title: { text: 'Title', left: 'center' },
+        tooltip: { trigger: 'axis' },
+        xAxis: { type: 'category', data: data.map(d => d.label) },
+        yAxis: { type: 'value' },
+        series: [{ type: 'bar', data: data.map(d => d.value) }]
+    };
+}
+
+// Register globally (replace dashes with underscores in function name)
+window.renderChart_<slug_underscored> = renderChart_<slug_underscored>;
+```
+
+**JSON data** (`static/data/experiments/<slug>.json`):
+```json
+[{"label": "A", "value": 10}, {"label": "B", "value": 20}]
+```
+
+## 2. Theme Awareness
+
+The `chart-component.js` handles theme switching automatically. Your render function receives the `echarts` object to use gradients:
+
+```javascript
+itemStyle: {
+    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+        { offset: 0, color: '#00ff9d' },
+        { offset: 1, color: '#00b36b' }
+    ])
+}
+```
+
+Themes `labThemeLight` and `labThemeDark` are applied automatically based on system preference.
 
 ## 3. Minimalist Aesthetic
-- **Colors**: Use the `labGreen` (#00ff9d) for primary data points.
-- **Contrast**: Ensure high visibility against #111111 (Dark) and #ffffff (Light).
-- **Paper ready images**:
-    - **Title**: Never have a title. 
-    - **Legend**: Try to have legend inside of the graph figure so it doesnt add extra height.
-    - **Accesibility**: If having multiple charts of the same type (lines, bars, etc.) make them distinguisable not just by color, texture on bars, different shapes on the lines, so that black and white printing can still be readable.
+
+- **Colors**: Use `labGreen` (#00ff9d) for primary data points
+- **Contrast**: Ensure high visibility against #111111 (Dark) and #ffffff (Light)
+- **Paper-ready**:
+    - **Title**: Avoid titles in the chart (use page title instead)
+    - **Legend**: Position inside the chart when possible
+    - **Accessibility**: Use different shapes/textures (not just colors) for print readability
+- **Tooltips**: Use hover to display values, and make a pop up that shows all values for the current x-axis value.
 
 ## 4. Auto-Sizing
-Always include a resize listener to make the chart responsive.
-```javascript
-window.addEventListener('resize', function() {
-    myChart.resize();
-});
+
+Handled automatically by `chart-component.js`. The component listens for resize and theme change events.
+
+## 5. File Organization
+
+```
+data/viz/
+├── my-chart.md        # Markdown with shortcode
+├── my-chart.js        # ECharts option function
+static/data/experiments/
+└── my-chart.json      # Data file
 ```
 
-## 5. Output Format
-When generating the code for `content/lab.md` or a specific experiment file, provide the full HTML snippet including the Alpine `x-data` block and the contained ECharts logic.
+The Hugo config mounts `data/viz/*.js` to `/js/charts/` for serving.
